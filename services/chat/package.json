@@ -1,5 +1,5 @@
 {
-  "name": "webrtc-test",
+  "name": "chat",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,8 +8,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "google-protobuf": "^3.21.2"
-  }
+  "license": "ISC"
 }

@@ -1,0 +1,92 @@
+version: "3.8"
+
+services:
+  web-server:
+    build:
+      context: ./services/web-server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:8000"
+    volumes:
+      - ./services/web-server/public:/usr/src/app/public
+    networks:
+      - backend
+
+  # Authentication Service
+  authentication:
+    build:
+      context: ./services/authentication
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    environment:
+      NODE_ENV: production
+    networks:
+      - backend
+
+  webrtc-signaling:
+    build:
+      context: ./services/webrtc-signaling
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8000"
+    networks:
+      - backend
+
+  # Chat Service
+  chat:
+    build:
+      context: ./services/chat
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+    environment:
+      NODE_ENV: production
+    networks:
+      - backend
+
+  # Game Logic Service
+  game-logic:
+    build:
+      context: ./services/game-logic
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8000"
+    environment:
+      NODE_ENV: production
+    networks:
+      - backend
+
+  # Player Management Service
+  player-management:
+    build:
+      context: ./services/player-management
+      dockerfile: Dockerfile
+      ports:
+        - "8004:8000"
+      environment:
+        NODE_ENV: production
+      networks:
+        - backend
+      volumes:
+        - player_data:/usr/src/app/data
+
+    # Common Database Service (if required)
+    database:
+      image: postgres:latest
+      volumes:
+        - db_data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: mmorpg
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: password
+      networks:
+        - backend
+
+  networks:
+    backend:
+      driver: bridge
+
+  volumes:
+    db_data:
+    player_data:
