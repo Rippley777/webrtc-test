@@ -62,31 +62,30 @@ services:
     build:
       context: ./services/player-management
       dockerfile: Dockerfile
-      ports:
-        - "8004:8000"
-      environment:
-        NODE_ENV: production
-      networks:
-        - backend
-      volumes:
-        - player_data:/usr/src/app/data
+    ports:
+      - "8004:8000"
+    environment:
+      NODE_ENV: production
+    networks:
+      - backend
+    volumes:
+      - player_data:/usr/src/app/data
 
-    # Common Database Service (if required)
-    database:
-      image: postgres:latest
-      volumes:
-        - db_data:/var/lib/postgresql/data
-      environment:
-        POSTGRES_DB: mmorpg
-        POSTGRES_USER: user
-        POSTGRES_PASSWORD: password
-      networks:
-        - backend
+  database:
+    image: postgres:latest
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: mmorpg
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    networks:
+      - backend
 
-  networks:
-    backend:
-      driver: bridge
+networks:
+  backend:
+    driver: bridge
 
-  volumes:
-    db_data:
-    player_data:
+volumes:
+  db_data:
+  player_data:
