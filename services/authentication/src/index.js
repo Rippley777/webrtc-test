@@ -22,7 +22,7 @@ app.post("/register", async (req, res) => {
   try {
     const result = await db.query(
       "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *",
-      [username, hashedPassword]
+      [username, email, hashedPassword]
     );
     res.send("User created successfully");
   } catch (error) {
