@@ -42,5 +42,10 @@ app.get("/protected", requireAuth, (req, res) => {
   res.send(`Welcome, you are authenticated as ${req.auth.username}`);
 });
 
+app.get("/", (_req, res) => res.send("Welcome to the MERN Docker Example!"));
+app.get("/health", (_req, res) =>
+  res.status(200).send(process.env.JWT_SECRET ? "UP" : "DOWN")
+);
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
