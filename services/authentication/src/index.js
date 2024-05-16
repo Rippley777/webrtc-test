@@ -26,6 +26,7 @@ app.post("/register", async (req, res) => {
     );
     res.send("User created successfully");
   } catch (error) {
+    console.error("/register", { error });
     if (error.code === "23505") {
       res.status(409).send("User already exists");
     } else {
