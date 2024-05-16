@@ -39,6 +39,10 @@ app.get("/players", (req, res) => {
   });
 });
 
-const server = app.listen(8090, () => {
-  console.log("Player management server running on http://localhost:8090");
+app.get("/", (_req, res) => res.send("Welcome to player management!"));
+
+app.get("/health", (_req, res) => res.status(200).send(pool ? "UP" : "DOWN"));
+
+const server = app.listen(8004, () => {
+  console.log("Player management server running on http://localhost:8004");
 });
