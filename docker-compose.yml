@@ -28,8 +28,13 @@ services:
       - ./services/web-server/public:/usr/src/app/public
     networks:
       - backend
+    environment:
+      DB_USER: user
+      DB_HOST: 172.17.0.1
+      DB_NAME: mmorpg
+      DB_PASSWORD: password
+      DB_PORT: 5432
 
-  # Authentication Service
   authentication:
     build:
       context: ./services/authentication
@@ -38,6 +43,11 @@ services:
       - "8001:8000"
     environment:
       NODE_ENV: production
+      DB_USER: user
+      DB_HOST: 172.17.0.1
+      DB_NAME: mmorpg
+      DB_PASSWORD: password
+      DB_PORT: 5432
     networks:
       - backend
 
@@ -50,7 +60,6 @@ services:
     networks:
       - backend
 
-  # Chat Service
   chat:
     build:
       context: ./services/chat
@@ -59,10 +68,14 @@ services:
       - "8002:8000"
     environment:
       NODE_ENV: production
+      DB_USER: user
+      DB_HOST: 172.17.0.1
+      DB_NAME: mmorpg
+      DB_PASSWORD: password
+      DB_PORT: 5432
     networks:
       - backend
 
-  # Game Logic Service
   game-logic:
     build:
       context: ./services/game-logic
@@ -71,10 +84,14 @@ services:
       - "8003:8000"
     environment:
       NODE_ENV: production
+      DB_USER: user
+      DB_HOST: 172.17.0.1
+      DB_NAME: mmorpg
+      DB_PASSWORD: password
+      DB_PORT: 5432
     networks:
       - backend
 
-  # Player Management Service
   player-management:
     build:
       context: ./services/player-management
@@ -83,28 +100,19 @@ services:
       - "8004:8000"
     environment:
       NODE_ENV: production
+      DB_USER: user
+      DB_HOST: 172.17.0.1
+      DB_NAME: mmorpg
+      DB_PASSWORD: password
+      DB_PORT: 5432
     networks:
       - backend
     volumes:
       - player_data:/usr/src/app/data
-
-  database:
-    image: postgres:latest
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: mmorpg
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
-      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
-    networks:
-      - backend
 
 networks:
   backend:
     driver: bridge
 
 volumes:
-  db_data:
   player_data:
