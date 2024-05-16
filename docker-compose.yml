@@ -1,6 +1,23 @@
 version: "3.8"
 
 services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/html:/usr/share/nginx/html:ro
+    depends_on:
+      - web-server
+      - authentication
+      - player-management
+      - chat
+      - webrtc-signaling
+    networks:
+      - backend
+
   web-server:
     build:
       context: ./services/web-server
