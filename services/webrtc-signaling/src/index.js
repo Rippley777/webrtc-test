@@ -1,7 +1,7 @@
 const WebSocket = require("ws");
 const jwt = require("jsonwebtoken");
 
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocket.Server({ port: 8001 });
 
 wss.on("connection", (ws, req) => {
   const token = req.url.split("token=")[1];
