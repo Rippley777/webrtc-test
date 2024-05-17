@@ -7,6 +7,11 @@ exports.register = async (req, res) => {
   console.log("/register", { username, email, password });
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  // validation is turning empty string into '@'
+  // please investigate ./middlewares/validationMiddleware.js
+  if (email === "@") {
+    return res.status(400).send("Invalid email");
+  }
   if (!username || !email || !hashedPassword) {
     return res.status(400).send("Invalid input");
   }
