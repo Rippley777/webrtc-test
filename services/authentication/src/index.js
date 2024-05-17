@@ -3,15 +3,18 @@ const express = require("express");
 
 const routes = require("./routes");
 
+const corsOptions = {
+  origin: "http://192.168.1.254",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // Allow cookies to be sent with requests
+  optionsSuccessStatus: 204,
+};
+
 const app = express();
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(routes);
-
-app.get("/health", (_req, res) =>
-  res.status(200).send(process.env.JWT_SECRET ? "UP" : "DOWN")
-);
-
-app.get("/", (_req, res) => res.send("Welcome to the MERN Docker Example!"));
 
 const PORT = process.env.PORT || 3000;
 
