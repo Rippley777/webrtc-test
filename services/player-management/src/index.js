@@ -1,18 +1,9 @@
 const express = require("express");
-const { Pool } = require("pg");
-
 const app = express();
 
-// Configure the PostgreSQL connection pool
-const pool = new Pool({
-  user: "test",
-  host: "localhost",
-  database: "mmorpg",
-  password: "uthinkursneaky?",
-  port: 5432,
-});
+const db = require("./db");
 
-pool.on("connect", () => {
+db.on("connect", () => {
   console.log("Connected to the PostgreSQL database.");
 });
 
@@ -25,13 +16,12 @@ CREATE TABLE IF NOT EXISTS players (
     y INTEGER
 );`;
 
-pool
-  .query(createTableQuery)
+db.query(createTableQuery)
   .then((res) => console.log("Table created successfully"))
   .catch((err) => console.error("Error executing query", err.stack));
 
 app.get("/players", (req, res) => {
-  pool.query("SELECT * FROM players", (err, result) => {
+  db.query("SELECT * FROM players", (err, result) => {
     if (err) {
       return res.status(400).json(err);
     }
@@ -41,7 +31,7 @@ app.get("/players", (req, res) => {
 
 app.get("/", (_req, res) => res.send("Welcome to player management!"));
 
-app.get("/health", (_req, res) => res.status(200).send(pool ? "UP" : "DOWN"));
+app.get("/health", (_req, res) => res.status(200).send(db ? "UP" : "DOWN"));
 
 const server = app.listen(8004, () => {
   console.log("Player management server running on http://localhost:8004");
