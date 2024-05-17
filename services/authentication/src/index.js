@@ -1,14 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 
-require("./routes/authRoutes");
-
 const app = express();
 app.use(express.json());
-
-const router = express.Router();
-
-router.use(authRoutes);
+app.use(routes);
 
 app.get("/health", (_req, res) =>
   res.status(200).send(process.env.JWT_SECRET ? "UP" : "DOWN")
