@@ -12,6 +12,7 @@ exports.register = async (req, res) => {
   if (email === "@") {
     return res.status(400).send("Invalid email");
   }
+
   if (!username || !email || !hashedPassword) {
     return res.status(400).send("Invalid input");
   }
@@ -25,7 +26,12 @@ exports.register = async (req, res) => {
   } catch (error) {
     console.error("/register (error) ", { error });
     if (error.code === "23505") {
-      res.status(409).send("User already exists");
+      if (error.constraint === "users_email_key") {
+        return res.status(409).send("Email already exists");
+      }
+      if (error.constraint === "users_username_key") {
+        return res.status(409).send("Username already exists");
+      }
     } else {
       res.status(500).send("Error creating user");
     }
