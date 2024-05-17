@@ -30,10 +30,8 @@ services:
       - backend
     environment:
       DB_USER: user
-      DB_HOST: 172.17.0.1
-      DB_NAME: mmorpg
-      DB_PASSWORD: password
-      DB_PORT: 5432
+    env_file:
+      - .env
 
   authentication:
     build:
@@ -43,11 +41,8 @@ services:
       - "8001:8000"
     environment:
       NODE_ENV: production
-      DB_USER: user
-      DB_HOST: 172.17.0.1
-      DB_NAME: mmorpg
-      DB_PASSWORD: password
-      DB_PORT: 5432
+    env_file:
+      - .env
     networks:
       - backend
 
@@ -68,11 +63,8 @@ services:
       - "8002:8000"
     environment:
       NODE_ENV: production
-      DB_USER: user
-      DB_HOST: 172.17.0.1
-      DB_NAME: mmorpg
-      DB_PASSWORD: password
-      DB_PORT: 5432
+    env_file:
+      - .env
     networks:
       - backend
 
@@ -84,11 +76,8 @@ services:
       - "8003:8000"
     environment:
       NODE_ENV: production
-      DB_USER: user
-      DB_HOST: 172.17.0.1
-      DB_NAME: mmorpg
-      DB_PASSWORD: password
-      DB_PORT: 5432
+    env_file:
+      - .env
     networks:
       - backend
 
@@ -100,11 +89,8 @@ services:
       - "8004:8000"
     environment:
       NODE_ENV: production
-      DB_USER: user
-      DB_HOST: 172.17.0.1
-      DB_NAME: mmorpg
-      DB_PASSWORD: password
-      DB_PORT: 5432
+    env_file:
+      - .env
     networks:
       - backend
     volumes:
