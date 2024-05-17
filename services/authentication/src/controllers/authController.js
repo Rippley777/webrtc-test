@@ -4,6 +4,7 @@ const db = require("../db");
 
 exports.register = async (req, res) => {
   const { username, email, password, role } = req.body;
+  console.log("/register", { username, email, password });
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
     const result = await db.query(
@@ -12,7 +13,7 @@ exports.register = async (req, res) => {
     );
     res.send("User created successfully");
   } catch (error) {
-    console.error("/register", { error });
+    console.error("/register (error) ", { error });
     if (error.code === "23505") {
       res.status(409).send("User already exists");
     } else {
