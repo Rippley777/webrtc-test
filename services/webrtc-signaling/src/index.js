@@ -1,30 +1,38 @@
 const WebSocket = require("ws");
-const { RTCPeerConnection, RTCSessionDescription } = require("wrtc");
-const server = require("http").createServer();
+const jwt = require("jsonwebtoken");
 
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({ port: 8080 });
 
-wss.on("connection", (ws) => {
-  ws.on("message", (message) => {
-    const msg = JSON.parse(message);
-    switch (msg.type) {
-      case "offer":
-        // Handle WebRTC offer
-        break;
-      case "answer":
-        // Handle WebRTC answer
-        break;
-      case "candidate":
-        // Handle new ICE candidate
-        break;
-      default:
-        console.log("Unknown message type:", msg.type);
+wss.on("connection", (ws, req) => {
+  const token = req.url.split("token=")[1];
+
+  if (!token) {
+    ws.close(1008, "Missing token");
+    return;
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      ws.close(1008, "Invalid token");
+      return;
     }
+
+    console.log("New client connected:", decoded);
+
+    ws.on("message", (message) => {
+      console.log("Received message:", message);
+      // Broadcast the message to all connected clients
+      wss.clients.forEach((client) => {
+        if (client !== ws && client.readyState === WebSocket.OPEN) {
+          client.send(message);
+        }
+      });
+    });
+
+    ws.on("close", () => {
+      console.log("Client disconnected");
+    });
   });
-
-  ws.send(JSON.stringify({ message: "Connected to WebRTC signaling server" }));
 });
 
-server.listen(8080, () => {
-  console.log("WebRTC signaling server running on http://localhost:8080");
-});
+console.log("WebRTC signaling server running on ws://localhost:8080");
