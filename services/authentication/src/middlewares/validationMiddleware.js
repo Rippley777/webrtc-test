@@ -1,3 +1,5 @@
+const { body } = require("express-validator");
+
 exports.validateRegister = [
   body("username")
     .trim()
