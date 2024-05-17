@@ -8,5 +8,5 @@ app.get("/", (req, res) => {
 });
 
 const server = app.listen(3000, () => {
-  console.log("Web server is running on http://localhost:3000");
+  console.log("Server running on port 3000");
 });
