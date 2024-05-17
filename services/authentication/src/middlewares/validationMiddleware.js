@@ -7,10 +7,13 @@ exports.validateRegister = [
     .withMessage("Username must be at least 3 characters long")
     .notEmpty()
     .withMessage("Username is required"),
-  body("email").isEmail().withMessage("Email must be valid").normalizeEmail(),
-  body("password")
+  body("email")
     .trim()
     .notEmpty()
+    .isEmail()
+    .withMessage("Email must be valid")
+    .normalizeEmail(),
+  body("password")
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long")
     .notEmpty()
