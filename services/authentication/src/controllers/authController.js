@@ -6,6 +6,11 @@ exports.register = async (req, res) => {
   const { username, email, password, role } = req.body;
   console.log("/register", { username, email, password });
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  if (!username || !email || !hashedPassword) {
+    return res.status(400).send("Invalid input");
+  }
+
   try {
     const result = await db.query(
       "INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *",
