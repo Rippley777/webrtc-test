@@ -3,10 +3,6 @@ const app = express();
 
 const db = require("./db");
 
-db.on("connect", () => {
-  console.log("Connected to the PostgreSQL database.");
-});
-
 // Ensuring the table exists
 const createTableQuery = `
 CREATE TABLE IF NOT EXISTS players (
