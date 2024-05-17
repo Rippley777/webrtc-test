@@ -31,10 +31,22 @@ exports.login = async (req, res) => {
   const { username, email, password } = req.body;
   console.log("/login", { username, email, password });
   try {
-    const result = await db.query(
-      "SELECT * FROM users WHERE username = $1 OR email = $2",
-      [username, email]
-    );
+    if (!username && !email) {
+      return res.status(400).send("Username or Email is required");
+    }
+    let result;
+    if (username) {
+      result = await db.query("SELECT * FROM users WHERE username = $1", [
+        username,
+      ]);
+    } else if (email) {
+      result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+    }
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("User not found");
+    }
+
     const user = result.rows[0];
     console.log("/login (db results)", { result: result.rows, user });
 
