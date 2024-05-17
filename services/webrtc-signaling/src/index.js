@@ -35,4 +35,4 @@ wss.on("connection", (ws, req) => {
   });
 });
 
-console.log("WebRTC signaling server running on ws://localhost:8080");
+console.log("Server running on port 8001");
