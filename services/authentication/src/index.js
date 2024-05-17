@@ -1,10 +1,11 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 
 const routes = require("./routes");
 
 const corsOptions = {
-  origin: "http://192.168.1.254",
+  origin: "http://localhost:5173",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true, // Allow cookies to be sent with requests
   optionsSuccessStatus: 204,
