@@ -1,7 +1,7 @@
 const WebSocket = require("ws");
 const jwt = require("jsonwebtoken");
 
-const wss = new WebSocket.Server({ port: 8001 });
+const wss = new WebSocket.Server({ port: 8080 });
 
 wss.on("connection", (ws, req) => {
   const token = req.url.split("token=")[1];
@@ -35,4 +35,4 @@ wss.on("connection", (ws, req) => {
   });
 });
 
-console.log("Server running on port 8001");
+console.log("Server running on port 8080");
