@@ -19,15 +19,19 @@ exports.getPlayers = async (req, res) => {
 exports.getPlayer = async (req, res) => {
   const userId = req.auth.userId; // Assuming userId is stored in the JWT payload
 
-  const existingPlayer = await db.query(
-    "SELECT * FROM players WHERE user_id = $1",
-    [userId]
-  );
+  if (!userId) {
+    return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
+  }
 
   try {
-    const player = await db.query("SELECT * FROM players WHERE id = $1", [
-      existingPlayer.id,
-    ]);
+    const existingPlayer = await db.query(
+      "SELECT * FROM players WHERE user_id = $1",
+      [userId]
+    );
+
+    if (existingPlayer.rows.length === 0) {
+      return res.status(404).send("Player not found");
+    }
 
     res.status(200).json({
       status: "success",
