@@ -89,7 +89,7 @@ exports.createCharacter = async (req, res) => {
     logger.secondary("awaiting [INSERT INTO characters] query");
     const result = await db.query(
       `INSERT INTO characters (player_id, name, level, experience_points, health, inventory, skills) 
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
       [player.playerId, name, 1, 0, 100, "{}", "{}"]
     );
     logger.info(`/player/create-character (result) ${result}`);
