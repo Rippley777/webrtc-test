@@ -14,7 +14,7 @@ exports.getCharactersByPlayerId = async (req, res) => {
   }
 
   try {
-    const player = await db.query("SELECT * FROM players WHERE userId = $1", [
+    const player = await db.query("SELECT * FROM players WHERE user_id = $1", [
       userId,
     ]);
 
