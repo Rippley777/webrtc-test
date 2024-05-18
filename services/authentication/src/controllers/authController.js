@@ -5,6 +5,9 @@ const db = require("../db");
 exports.register = async (req, res) => {
   const { username, email, password, role } = req.body;
   console.log("/register", { username, email, password });
+  if (username.indexOf("@") > -1) {
+    return res.status(400).send("Username cannot contain '@'");
+  }
   const hashedPassword = await bcrypt.hash(password, 10);
 
   // validation is turning empty string into '@'
@@ -46,7 +49,11 @@ exports.login = async (req, res) => {
       return res.status(400).send("Username or Email is required");
     }
     let result;
-    if (username) {
+    if (username.indexOf("@") > -1) {
+      result = await db.query("SELECT * FROM users WHERE email = $1", [
+        username,
+      ]);
+    } else if (username) {
       result = await db.query("SELECT * FROM users WHERE username = $1", [
         username,
       ]);
