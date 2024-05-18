@@ -11,6 +11,10 @@ const corsOptions = {
   credentials: true, // Allow cookies to be sent with requests
   optionsSuccessStatus: 204,
 };
+
+// Middleware setup
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
 
 app.use(routes);

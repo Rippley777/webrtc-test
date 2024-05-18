@@ -1,4 +1,4 @@
-const { validationResult } = require("express-validator");
+// const { body } = require("express-validator");
 const db = require("../db");
 const logger = require("../lib/helpers/logger");
 
@@ -49,7 +49,7 @@ exports.createCharacter = async (req, res) => {
     return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
   }
 
-  if (!req.body.name) {
+  if (!req.body) {
     logger.warn("no character name was provided");
     return res.status(400).json({ errors: [{ msg: "Name is required" }] });
   }
