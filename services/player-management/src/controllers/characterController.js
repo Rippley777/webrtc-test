@@ -32,8 +32,14 @@ exports.getCharactersByPlayerId = async (req, res) => {
       "SELECT * FROM characters WHERE player_id = $1",
       [player.id]
     );
-    logger.info(`/get-characters-by-player-id player ${player}`);
-    logger.info(`/get-characters-by-player-id characters ${characters}`);
+
+    logger.info(
+      `/get-characters-by-player-id player ${JSON.stringify(player)}`
+    );
+
+    logger.info(
+      `/get-characters-by-player-id characters ${JSON.stringify(characters)}`
+    );
 
     res.status(200).json(characters.rows);
   } catch (error) {
