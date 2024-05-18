@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.use(requireAuth);
 router.use(playerRoutes);
+router.use("/character", require("./characterRoutes"));
 
 router.get("/", (_req, res) => res.send("Player management service is up"));
 router.get("/health", (_req, res) =>
