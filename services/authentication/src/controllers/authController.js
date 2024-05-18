@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const db = require("../db");
 
@@ -90,6 +91,7 @@ exports.login = async (req, res) => {
       role: user.role,
     });
   } catch (error) {
+    console.error("/login (error) ", { error });
     res.status(500).send("Error logging in");
   }
 };
