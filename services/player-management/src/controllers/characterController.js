@@ -97,6 +97,9 @@ exports.createCharacter = async (req, res) => {
     res.status(201).json(result.rows[0]);
   } catch (error) {
     logger.error(`/player/create-character (error) ${error}`);
+    if (error === 'duplicate key value violates unique constraint "name"') {
+      return res.status(409).send("Character name already exists");
+    }
     res.status(500).send("Error creating character");
   }
 };
