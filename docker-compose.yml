@@ -96,6 +96,7 @@ services:
       - backend
     volumes:
       - player_data:/usr/src/app/data
+      - ./services/player-management/logs:/usr/src/app/logs
 
 networks:
   backend:
