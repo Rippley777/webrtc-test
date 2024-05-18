@@ -3,7 +3,7 @@ const playerRoutes = require("./playerRoutes");
 
 const router = express.Router();
 
-// Use playerRoutes directly
+router.use(requireAuth);
 router.use(playerRoutes);
 
 router.get("/", (_req, res) => res.send("Player management service is up"));
