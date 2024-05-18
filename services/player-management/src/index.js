@@ -11,7 +11,6 @@ const corsOptions = {
   credentials: true, // Allow cookies to be sent with requests
   optionsSuccessStatus: 204,
 };
-
 app.use(cors(corsOptions));
 
 app.use(routes);
