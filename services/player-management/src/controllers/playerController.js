@@ -1,9 +1,11 @@
 const db = require("../db");
+const logger = require("../lib/helpers/logger");
 
 exports.getPlayers = async (req, res) => {
   try {
+    logger.info("awaiting [SELECT * FROM players] query");
     const players = await db.query("SELECT * FROM players");
-
+    logger.info("players", { players: players.rows });
     res.status(200).json({
       status: "success",
       results: players.rows.length,
