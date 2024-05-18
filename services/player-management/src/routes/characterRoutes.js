@@ -9,7 +9,7 @@ const {
   getCharactersByPlayerId,
 } = require("../controllers/characterController");
 
-router.post("/create-character", createCharacter);
+router.post("/create-character", requireAuth, createCharacter);
 router.get("/get-characters", requireAuth, getCharactersByPlayerId);
 
 module.exports = router;

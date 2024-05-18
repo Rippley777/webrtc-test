@@ -5,6 +5,35 @@ const db = require("../db");
 //     body("name").isString().isLength({ min: 1 }).withMessage("Name is required"),
 //   ];
 
+exports.getCharactersByPlayerId = async (req, res) => {
+  console.log("/get-characters-by-player-id", { body: req });
+  const userId = req.auth.userId;
+
+  if (!userId) {
+    return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
+  }
+
+  try {
+    const player = await db.query("SELECT * FROM players WHERE userId = $1", [
+      userId,
+    ]);
+
+    if (!player) {
+      return res.status(404).send("Player not found");
+    }
+
+    const characters = await db.query(
+      "SELECT * FROM characters WHERE player_id = $1",
+      [player.playerId]
+    );
+
+    res.status(200).json(characters.rows);
+  } catch (error) {
+    console.error("/get-characters-by-player-id", { error });
+    res.status(500).send("Error getting characters");
+  }
+};
+
 exports.createCharacter = async (req, res) => {
   console.log("/create-character", { body: req });
   const userId = req.auth.userId;
