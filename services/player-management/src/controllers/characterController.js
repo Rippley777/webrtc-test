@@ -24,7 +24,7 @@ exports.getCharactersByPlayerId = async (req, res) => {
 
     const characters = await db.query(
       "SELECT * FROM characters WHERE player_id = $1",
-      [player.playerId]
+      [player.id]
     );
 
     res.status(200).json(characters.rows);
@@ -35,7 +35,7 @@ exports.getCharactersByPlayerId = async (req, res) => {
 };
 
 exports.createCharacter = async (req, res) => {
-  console.log("/create-character", { body: req });
+  console.log("/create-character", { body: req.body });
   const userId = req.auth.userId;
 
   //   const errors = validationResult(req);
