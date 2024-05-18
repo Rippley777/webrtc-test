@@ -6,7 +6,7 @@ const db = require("../db");
 //   ];
 
 exports.createCharacter = async (req, res) => {
-  console.log("/create-character", { body: req.body });
+  console.log("/create-character", { body: req });
   const userId = req.auth.userId;
 
   //   const errors = validationResult(req);

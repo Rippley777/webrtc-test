@@ -6,6 +6,6 @@ const router = express.Router();
 const { requireAuth } = require("../middlewares/authMiddleware");
 const { createCharacter } = require("../controllers/characterController");
 
-router.post("/create-character", requireAuth, createCharacter);
+router.post("/create-character", createCharacter);
 
 module.exports = router;
