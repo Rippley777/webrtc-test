@@ -17,7 +17,7 @@ exports.getPlayers = async (req, res) => {
 };
 
 exports.getPlayer = async (req, res) => {
-  const userId = req.auth.userId; // Assuming userId is stored in the JWT payload
+  const userId = req.auth.userId;
 
   console.log("/player/get-player", { userId });
   if (!userId) {
@@ -29,7 +29,7 @@ exports.getPlayer = async (req, res) => {
       "SELECT * FROM players WHERE user_id = $1",
       [userId]
     );
-    console.log("/player/get-player", { existingPlayer: { rows } });
+    console.log("/player/get-player", { existingPlayer: existingPlayer.rows });
     if (existingPlayer.rows.length === 0) {
       return res.status(404).send("Player not found");
     }
@@ -37,11 +37,12 @@ exports.getPlayer = async (req, res) => {
     res.status(200).json({
       status: "success",
       data: {
-        player: player.rows[0],
+        player: existingPlayer.rows[0],
       },
     });
   } catch (err) {
     console.error(err.message);
+    res.status(500).send("Server Error");
   }
 };
 
