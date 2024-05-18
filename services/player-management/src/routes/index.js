@@ -1,6 +1,6 @@
 const express = require("express");
 const playerRoutes = require("./playerRoutes");
-
+const { requireAuth } = require("../middlewares/authMiddleware");
 const router = express.Router();
 
 router.use(requireAuth);

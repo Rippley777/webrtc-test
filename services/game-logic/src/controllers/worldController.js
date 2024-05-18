@@ -6,3 +6,7 @@ function updateWorldState() {
 
 // Run update loop at regular intervals
 setInterval(updateWorldState, 60000);
+
+module.exports = {
+  updateWorldState,
+};

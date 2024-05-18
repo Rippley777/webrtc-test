@@ -8,3 +8,7 @@ function updateNpcStates() {
 
 // Run update loop at regular intervals
 setInterval(updateNpcStates, 1000);
+
+module.exports = {
+  updateNpcStates,
+};
