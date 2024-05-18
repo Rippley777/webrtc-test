@@ -16,6 +16,30 @@ exports.getPlayers = async (req, res) => {
   }
 };
 
+exports.getPlayer = async (req, res) => {
+  const userId = req.auth.userId; // Assuming userId is stored in the JWT payload
+
+  const existingPlayer = await db.query(
+    "SELECT * FROM players WHERE user_id = $1",
+    [userId]
+  );
+
+  try {
+    const player = await db.query("SELECT * FROM players WHERE id = $1", [
+      existingPlayer.id,
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        player: player.rows[0],
+      },
+    });
+  } catch (err) {
+    console.error(err.message);
+  }
+};
+
 exports.createPlayer = async (req, res) => {
   const userId = req.auth.userId; // Assuming userId is stored in the JWT payload
 
