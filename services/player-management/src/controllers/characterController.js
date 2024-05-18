@@ -54,10 +54,10 @@ exports.createCharacter = async (req, res) => {
     return res.status(400).json({ errors: [{ msg: "Name is required" }] });
   }
   const { name } = req.body;
-  if (!errors.isEmpty()) {
-    logger.warn("validation failed", { errors: errors.array() });
-    return res.status(400).json({ errors: errors.array() });
-  }
+  //   if (!errors.isEmpty()) {
+  //     logger.warn("validation failed", { errors: errors.array() });
+  //     return res.status(400).json({ errors: errors.array() });
+  //   }
 
   try {
     const player = await db.query("SELECT * FROM players WHERE user_id = $1", [
