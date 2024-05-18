@@ -6,15 +6,6 @@ const router = express.Router();
 const { requireAuth } = require("../middlewares/authMiddleware");
 const { createCharacter } = require("../controllers/characterController");
 
-const validateCharacter = [
-  body("name").isString().isLength({ min: 1 }).withMessage("Name is required"),
-];
-
-router.post(
-  "/create-character",
-  requireAuth,
-  validateCharacter,
-  createCharacter
-);
+router.post("/create-character", requireAuth, createCharacter);
 
 module.exports = router;

@@ -1,11 +1,22 @@
 const { validationResult } = require("express-validator");
 const db = require("../db");
 
-exports.createCharacter = async (req, res) => {
-  console.log("/create-character", { body: req });
-  const userId = req.auth.userId; // Assuming userId is stored in the JWT payload
+// const validateCharacter = [
+//     body("name").isString().isLength({ min: 1 }).withMessage("Name is required"),
+//   ];
 
-  const errors = validationResult(req);
+exports.createCharacter = async (req, res) => {
+  console.log("/create-character", { body: req.body });
+  const userId = req.auth.userId;
+
+  //   const errors = validationResult(req);
+  if (!userId) {
+    return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
+  }
+
+  if (!req.body.name) {
+    return res.status(400).json({ errors: [{ msg: "Name is required" }] });
+  }
   const { name } = req.body;
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
