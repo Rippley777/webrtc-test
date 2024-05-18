@@ -1,4 +1,5 @@
-const { createLogger, format, transports, config } = require("winston");
+const winston = require("winston");
+const { createLogger, transports, format } = winston;
 const { combine, timestamp, printf, colorize } = format;
 
 // Define custom colors for different log levels
