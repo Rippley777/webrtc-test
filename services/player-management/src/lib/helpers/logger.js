@@ -39,7 +39,9 @@ module.exports.loggerFileOnly = createLogger({
     timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
     logFormat
   ),
-  transports: [new transports.File({ filename: "../../../combined.log" })],
+  transports: [
+    new transports.File({ filename: "../../../../../combined.log" }),
+  ],
 });
 
 const logger = createLogger({

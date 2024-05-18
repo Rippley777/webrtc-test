@@ -5,7 +5,7 @@ exports.getPlayers = async (req, res) => {
   try {
     logger.info("awaiting [SELECT * FROM players] query");
     const players = await db.query("SELECT * FROM players");
-    logger.info("players", { players: players.rows });
+    logger.info({ players });
     res.status(200).json({
       status: "success",
       results: players.rows.length,
@@ -14,7 +14,7 @@ exports.getPlayers = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err.message);
+    logger.error(err.message);
   }
 };
 
@@ -43,33 +43,37 @@ exports.getPlayer = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err.message);
+    logger.error("getPlayer [playerController]", { err });
     res.status(500).send("Server Error");
   }
 };
 
 exports.createPlayer = async (req, res) => {
   const userId = req.auth.userId; // Assuming userId is stored in the JWT payload
-
-  const existingPlayer = await db.query(
-    "SELECT * FROM players WHERE user_id = $1",
-    [userId]
-  );
-
-  if (existingPlayer.rows.length > 0) {
-    console.log("player already exists");
-    return res.status(409).send("Player already exists");
-  }
+  logger.info("/create-player req recv", { userId });
 
   try {
+    logger.secondary("awaiting [SELECT * FROM players WHERE xyz] query");
+    const existingPlayer = await db.query(
+      "SELECT * FROM players WHERE user_id = $1",
+      [userId]
+    );
+    logger.secondary({ existingPlayer });
+    if (existingPlayer.rows.length > 0) {
+      logger.warn("player already exists");
+      return res.status(409).send("Player already exists");
+    }
+
+    logger.secondary("awaiting [INSERT INTO players (*)] query");
     const result = await db.query(
       `INSERT INTO players (user_id, level, experience_points, health, inventory) 
          VALUES ($1, $2, $3, $4, $5) RETURNING *`,
       [userId, 1, 0, 100, "{}"]
     );
+    logger.info("query result", { result });
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    console.error("/create-player", { error });
+    logger.error("createPlayer [playerController]", { error });
     res.status(500).send("Error creating player");
   }
 };
