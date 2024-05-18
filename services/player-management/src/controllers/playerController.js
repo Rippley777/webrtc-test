@@ -17,20 +17,13 @@ exports.getPlayers = async (req, res) => {
 };
 
 exports.createPlayer = async (req, res) => {
-  const { level, experience_points, health, inventory } = req.body;
   const userId = req.auth.userId; // Assuming userId is stored in the JWT payload
 
   try {
     const result = await db.query(
       `INSERT INTO players (user_id, level, experience_points, health, inventory) 
          VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [
-        userId,
-        level || 1,
-        experience_points || 0,
-        health || 100,
-        inventory || "{}",
-      ]
+      [userId, 1, 0, 100, "{}"]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
