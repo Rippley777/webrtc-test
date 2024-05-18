@@ -2,48 +2,47 @@ const { validationResult } = require("express-validator");
 const db = require("../db");
 
 exports.createCharacter = async (req, res) => {
-  console.log("/create-character", { body: req.body });
+  console.log("/create-character", { body: req });
   const userId = req.auth.userId; // Assuming userId is stored in the JWT payload
 
-  async (req, res) => {
-    const errors = validationResult(req);
-    const { name } = req.body;
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+  const errors = validationResult(req);
+  const { name } = req.body;
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const player = await db.query("SELECT * FROM players WHERE userId = $1", [
+      userId,
+    ]);
+
+    if (!player) {
+      return res.status(404).send("Player not found");
     }
 
-    try {
-      const player = await db.query("SELECT * FROM players WHERE userId = $1", [
-        userId,
-      ]);
+    const existingCharacter = await db.query(
+      "SELECT * FROM characters WHERE player_id = $1",
+      [player.playerId]
+    );
 
-      if (!player) {
-        return res.status(404).send("Player not found");
-      }
+    if (existingCharacter.rows.length > 0) {
+      console.log("character already exists");
+      return res
+        .status(409)
+        .send("You've reached the current max number of characters");
+    }
 
-      const existingCharacter = await db.query(
-        "SELECT * FROM characters WHERE player_id = $1",
-        [player.playerId]
-      );
+    console.log("/player/create-character", { player });
 
-      if (existingCharacter.rows.length > 0) {
-        return res
-          .status(409)
-          .send("You've reached the current max number of characters");
-      }
-
-      console.log("/player/create-character", { player });
-
-      const result = await db.query(
-        `INSERT INTO characters (player_id, name, level, experience_points, health, inventory, skills) 
+    const result = await db.query(
+      `INSERT INTO characters (player_id, name, level, experience_points, health, inventory, skills) 
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-        [player.playerId, name, 1, 0, 100, "{}", "{}"]
-      );
-
-      res.status(201).json(result.rows[0]);
-    } catch (error) {
-      console.error("/create-character", { error });
-      res.status(500).send("Error creating character");
-    }
-  };
+      [player.playerId, name, 1, 0, 100, "{}", "{}"]
+    );
+    console.log("/player/create-character (result)", { result });
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("/create-character", { error });
+    res.status(500).send("Error creating character");
+  }
 };

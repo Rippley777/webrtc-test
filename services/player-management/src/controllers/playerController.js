@@ -19,6 +19,16 @@ exports.getPlayers = async (req, res) => {
 exports.createPlayer = async (req, res) => {
   const userId = req.auth.userId; // Assuming userId is stored in the JWT payload
 
+  const existingPlayer = await db.query(
+    "SELECT * FROM players WHERE user_id = $1",
+    [userId]
+  );
+
+  if (existingPlayer.rows.length > 0) {
+    console.log("player already exists");
+    return res.status(409).send("Player already exists");
+  }
+
   try {
     const result = await db.query(
       `INSERT INTO players (user_id, level, experience_points, health, inventory) 
