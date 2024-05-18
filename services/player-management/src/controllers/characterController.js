@@ -17,14 +17,16 @@ exports.getCharactersByPlayerId = async (req, res) => {
 
   try {
     logger.secondary("awaiting [SELECT * FROM players WHERE xyz] query");
-    const player = await db.query("SELECT * FROM players WHERE user_id = $1", [
+    const players = await db.query("SELECT * FROM players WHERE user_id = $1", [
       userId,
     ]);
 
-    if (!player) {
+    if (!players.rows.length === 0) {
       logger.warn("player not found");
       return res.status(404).send("Player not found");
     }
+
+    const player = players.rows[0];
 
     const characters = await db.query(
       "SELECT * FROM characters WHERE player_id = $1",
