@@ -19,7 +19,7 @@ exports.getPlayers = async (req, res) => {
 exports.getPlayer = async (req, res) => {
   const userId = req.auth.userId; // Assuming userId is stored in the JWT payload
 
-  console.log("/player/get-player", { userId, body: req.body });
+  console.log("/player/get-player", { userId });
   if (!userId) {
     return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
   }
@@ -29,7 +29,7 @@ exports.getPlayer = async (req, res) => {
       "SELECT * FROM players WHERE user_id = $1",
       [userId]
     );
-    console.log("/player/get-player", { existingPlayer });
+    console.log("/player/get-player", { existingPlayer: { rows } });
     if (existingPlayer.rows.length === 0) {
       return res.status(404).send("Player not found");
     }
