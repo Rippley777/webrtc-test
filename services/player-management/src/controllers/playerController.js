@@ -50,7 +50,7 @@ exports.getPlayer = async (req, res) => {
 
 exports.createPlayer = async (req, res) => {
   const userId = req.auth.userId; // Assuming userId is stored in the JWT payload
-  logger.info("/create-player req recv", { userId });
+  logger.info(`/create-player req recv userId: ${userId}`);
 
   try {
     logger.secondary("awaiting [SELECT * FROM players WHERE xyz] query");
@@ -58,7 +58,7 @@ exports.createPlayer = async (req, res) => {
       "SELECT * FROM players WHERE user_id = $1",
       [userId]
     );
-    logger.secondary({ existingPlayer });
+    logger.secondary(`existing player ${existingPlayer.rows}`);
     if (existingPlayer.rows.length > 0) {
       logger.warn("player already exists");
       return res.status(409).send("Player already exists");
@@ -70,10 +70,10 @@ exports.createPlayer = async (req, res) => {
          VALUES ($1, $2, $3, $4, $5) RETURNING *`,
       [userId, 1, 0, 100, "{}"]
     );
-    logger.info("query result", { result });
+    logger.info(`query result result: ${result.rows}`);
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    logger.error("createPlayer [playerController]", { error });
+    logger.error(`createPlayer [playerController] error: ${error}`);
     res.status(500).send("Error creating player");
   }
 };

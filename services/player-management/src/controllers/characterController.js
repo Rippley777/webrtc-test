@@ -8,7 +8,7 @@ const logger = require("../lib/helpers/logger");
 
 exports.getCharactersByPlayerId = async (req, res) => {
   const userId = req.auth.userId;
-  logger.info("/get-characters-by-player-id req recv", { userId });
+  logger.info(`/get-characters-by-player-id req recv userId ${userId}`);
 
   if (!userId) {
     logger.warn("no userId was provided in token");
@@ -30,18 +30,19 @@ exports.getCharactersByPlayerId = async (req, res) => {
       "SELECT * FROM characters WHERE player_id = $1",
       [player.id]
     );
-    logger.info("/get-characters-by-player-id", { player, characters });
+    logger.info(`/get-characters-by-player-id player ${player}`);
+    logger.info(`/get-characters-by-player-id characters ${characters}`);
 
     res.status(200).json(characters.rows);
   } catch (error) {
-    logger.error("/get-characters-by-player-id", { error });
+    logger.error(`/get-characters-by-player-id error ${error}`);
     res.status(500).send("Error getting characters");
   }
 };
 
 exports.createCharacter = async (req, res) => {
   const userId = req.auth.userId;
-  logger.info("/create-character req recv", { userId });
+  logger.info(`/create-character req recv userId: ${userId}`);
 
   //   const errors = validationResult(req);
   if (!userId) {
@@ -82,7 +83,8 @@ exports.createCharacter = async (req, res) => {
         .send("You've reached the current max number of characters");
     }
 
-    logger.info("FOUND DATA:", { player, exitingCharacter });
+    logger.info(`FOUND DATA (player): ${player.rows}`);
+    logger.info(`FOUND DATA (character): ${existingCharacter.rows[0]}`);
 
     logger.secondary("awaiting [INSERT INTO characters] query");
     const result = await db.query(
@@ -90,10 +92,10 @@ exports.createCharacter = async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
       [player.playerId, name, 1, 0, 100, "{}", "{}"]
     );
-    logger.info("/player/create-character (result)", { result });
+    logger.info(`/player/create-character (result) ${result}`);
     res.status(201).json(result.rows[0]);
   } catch (error) {
-    logger.error("/player/create-character", { error });
+    logger.error(`/player/create-character (error) ${error}`);
     res.status(500).send("Error creating character");
   }
 };

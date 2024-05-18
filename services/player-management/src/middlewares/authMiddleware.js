@@ -3,7 +3,7 @@ const logger = require("../lib/helpers/logger");
 
 exports.requireAuth = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
-  logger.info("/player requireAuth [middleware]", { token });
+  logger.info(`/player requireAuth [middleware] token: ${token}`);
 
   if (!token) {
     return res.status(401).send("No token provided");
@@ -13,7 +13,7 @@ exports.requireAuth = (req, res, next) => {
       return res.status(401).send("Invalid token");
     }
     req.auth = payload;
-    logger.success("/player requireAuth middleware", { payload });
+    logger.info(`/player requireAuth middleware payload ${payload}`);
     next();
   });
 };
