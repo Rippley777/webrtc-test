@@ -61,15 +61,16 @@ exports.createCharacter = async (req, res) => {
   //   }
 
   try {
-    const player = await db.query("SELECT * FROM players WHERE user_id = $1", [
+    const players = await db.query("SELECT * FROM players WHERE user_id = $1", [
       userId,
     ]);
 
-    if (!player) {
+    if (!players.rows[0]) {
       logger.warn("player not found");
       return res.status(404).send("Player not found");
     }
 
+    const player = players.rows[0];
     logger.secondary("awaiting [SELECT * FROM characters WHERE xyz] query");
     const existingCharacter = await db.query(
       "SELECT * FROM characters WHERE player_id = $1",
