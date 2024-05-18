@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 exports.requireAuth = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
-  console.log("/player requireAuth middleware hit", { req, token });
+  console.log("/player requireAuth middleware hit", { token });
 
   if (!token) {
     return res.status(401).send("No token provided");

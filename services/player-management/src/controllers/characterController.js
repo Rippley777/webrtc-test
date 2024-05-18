@@ -19,11 +19,12 @@ exports.createCharacter = async (req, res) => {
       if (!player) {
         return res.status(404).send("Player not found");
       }
+      console.log("/player/create-character", { player });
       console.log("/create-player", { player });
       const result = await db.query(
-        `INSERT INTO characters (player_id, name, level, experience_points, health, inventory) 
+        `INSERT INTO characters (player_id, name, level, experience_points, health, inventory, skills) 
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-        [player.playerId, name, 1, 0, 100, "{}"]
+        [player.playerId, name, 1, 0, 100, "{}", "{}"]
       );
       res.status(201).json(result.rows[0]);
     } catch (error) {
