@@ -5,6 +5,7 @@ const routes = require("./routes");
 
 const app = express();
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Use the main router
 app.use("/api", routes);
