@@ -74,11 +74,11 @@ exports.createCharacter = async (req, res) => {
     logger.secondary("awaiting [SELECT * FROM characters WHERE xyz] query");
     const existingCharacter = await db.query(
       "SELECT * FROM characters WHERE player_id = $1",
-      [player.playerId]
+      [player.id]
     );
 
-    if (existingCharacter.rows.length > 0) {
-      console.warn("character already exists");
+    if (existingCharacter.rows.length >= 3) {
+      console.warn("too many characters already exists");
       return res
         .status(409)
         .send("You've reached the current max number of characters");
@@ -91,7 +91,7 @@ exports.createCharacter = async (req, res) => {
     const result = await db.query(
       `INSERT INTO characters (player_id, name, level, experience_points, health, inventory, skills) 
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [player.playerId, name, 1, 0, 100, "{}", "{}"]
+      [player.id, name, 1, 0, 100, "{}", "{}"]
     );
     logger.info(`/player/create-character (result) ${result}`);
     res.status(201).json(result.rows[0]);
