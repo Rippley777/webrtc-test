@@ -41,6 +41,10 @@ exports.register = async (req, res) => {
   }
 };
 
+function hashUserId(userId) {
+  return crypto.createHash("sha256").update(userId).digest("hex");
+}
+
 exports.login = async (req, res) => {
   const { username, email, password } = req.body;
   console.log("/login", { username, email, password });
@@ -71,12 +75,20 @@ exports.login = async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).send("Invalid credentials");
     }
+
+    const hashedUserId = hashUserId(user.id.toString());
+
     const token = jwt.sign(
       { username: user.username, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
-    res.json({ id, token, username: user.username, role: user.role });
+    res.json({
+      id: hashedUserId,
+      token,
+      username: user.username,
+      role: user.role,
+    });
   } catch (error) {
     res.status(500).send("Error logging in");
   }
