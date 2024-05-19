@@ -4,7 +4,7 @@ const db = require("../db");
 const logger = require("../lib/helpers/logger");
 
 const GAME_LOGIC_SERVICE_URL =
-  process.env.GAME_LOGIC_SERVICE_URL || "http://game-logic:8003";
+  process.env.GAME_LOGIC_SERVICE_URL || "http://game-logic";
 
 // Function to fetch initial user location from PostgreSQL
 const fetchUserLocationFromDB = async (userId) => {
@@ -94,12 +94,18 @@ const updateUserLocation = async (req, res) => {
 
   // Update user location in Redis
   updateUserLocationInRedis(userId, location);
-
-  // Notify Game Logic service about location update
-  await axios.post(`${GAME_LOGIC_SERVICE_URL}/update-state`, {
-    key: `userLocation:${userId}`,
-    value: location,
-  });
+  try {
+    // Notify Game Logic service about location update
+    await axios.post(`${GAME_LOGIC_SERVICE_URL}/update-state`, {
+      key: `userLocation:${userId}`,
+      value: location,
+    });
+  } catch (err) {
+    logger.error("Error updating user location in Game Logic service", {
+      error: err,
+    });
+    return res.status(500).send("Error updating location");
+  }
 
   res.status(200).send("Location updated");
 };
