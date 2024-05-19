@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const logger = require("./lib/helpers/logger");
 const cors = require("cors");
