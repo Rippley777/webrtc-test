@@ -1,8 +1,18 @@
 const express = require("express");
 const httpProxy = require("http-proxy");
 const logger = require("./lib/helpers/logger");
+const cors = require("cors");
 
 const app = express();
+
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // Allow cookies to be sent with requests
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
 
 // Create a proxy server
 const proxy = httpProxy.createProxyServer({});
