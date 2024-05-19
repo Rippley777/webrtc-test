@@ -30,6 +30,7 @@ const fetchUserLocationFromDB = async (userId) => {
 
 // Function to update user location in Redis
 const updateUserLocationInRedis = (userId, location) => {
+  logger.info("Update user location in Redis");
   const locationKey = `user:location:${userId}`;
   redisClient.set(
     locationKey,
