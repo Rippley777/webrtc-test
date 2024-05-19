@@ -21,7 +21,10 @@ app.use(cors(corsOptions));
 // Import routes
 const locationRoutes = require("./routes/locationRoutes");
 app.use(locationRoutes);
-
+app.get("/", (_req, res) => res.send("Player management service is up"));
+app.get("/health", (_req, res) =>
+  res.status(200).send(process.env.JWT_SECRET ? "UP" : "DOWN")
+);
 // Start the server
 
 app.listen(9000, () => {
