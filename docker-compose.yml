@@ -16,8 +16,8 @@ services:
       - chat
       - webrtc-signaling
       - game-logic
-      - world-server
-      # - gateway
+      # - world-server
+      - gateway
     networks:
       - backend
 
@@ -101,24 +101,24 @@ services:
       - player_data:/usr/src/app/data
       - ./services/player-management/logs:/usr/src/app/logs
 
-  # gateway:
-  #   build:
-  #     context: ./services/gateway
-  #   ports:
-  #     - "8000:8000"
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - world-server-1
-  #     - world-server-2
-  #     - game-logic
+  gateway:
+    build:
+      context: ./services/gateway
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - world-server-1
+      - world-server-2
+      - game-logic
 
   world-server:
     build:
       context: ./services/world-server
       dockerfile: Dockerfile
     ports:
-      - "9000:8000"
+      - "9001:9000"
     environment:
       NODE_ENV: production
       GAME_LOGIC_SERVICE_URL: http://game-logic:8003
@@ -132,21 +132,23 @@ services:
     networks:
       - backend
 
-  # world-server-2:
-  #   build:
-  #     context: ./services/world-server
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "9002:9000"
-  #   environment:
-  #     NODE_ENV: production
-  #     REDIS_HOST: redis
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - redis
-  #   networks:
-  #     - backend
+  world-server-2:
+    build:
+      context: ./services/world-server
+      dockerfile: Dockerfile
+    ports:
+      - "9002:9000"
+    environment:
+      NODE_ENV: production
+      GAME_LOGIC_SERVICE_URL: http://game-logic:8003
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    networks:
+      - backend
 
   redis:
     image: "redis:alpine"
