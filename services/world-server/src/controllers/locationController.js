@@ -4,8 +4,9 @@ const db = require("../db");
 const logger = require("../lib/helpers/logger");
 
 const GAME_LOGIC_SERVICE_URL =
-  process.env.GAME_LOGIC_SERVICE_URL || "http://game-logic";
+  process.env.GAME_LOGIC_SERVICE_URL || "http://game-logic:8003";
 
+console.log("GAME_LOGIC_SERVICE_URL", GAME_LOGIC_SERVICE_URL);
 // Function to fetch initial user location from PostgreSQL
 const fetchUserLocationFromDB = async (userId) => {
   try {
@@ -73,7 +74,7 @@ const userEntersWorld = async (req, res) => {
 
     res.status(200).json(location);
   } catch (err) {
-    res.status(500).send("Error fetching user location");
+    res.status(500).send("Error fetching user location", { err });
   }
 };
 
