@@ -46,7 +46,7 @@ app.use((req, res) => {
 });
 
 // Start the gateway server
-const PORT = 8070;
+const PORT = 8000;
 app.listen(PORT, () => {
   logger.info(`Gateway server running on port ${PORT}`);
 });
