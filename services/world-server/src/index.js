@@ -20,7 +20,7 @@ app.use(cors(corsOptions));
 
 // Import routes
 const locationRoutes = require("./routes/locationRoutes");
-app.use("/locations", locationRoutes);
+app.use(locationRoutes);
 
 // Start the server
 
