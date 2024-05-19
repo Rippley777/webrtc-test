@@ -121,11 +121,14 @@ services:
       - "9000:8000"
     environment:
       NODE_ENV: production
+      GAME_LOGIC_SERVICE_URL: http://game-logic:8003
       REDIS_HOST: redis
+      REDIS_PORT: 6379
     env_file:
       - .env
     depends_on:
       - redis
+      - game-logic
     networks:
       - backend
 
