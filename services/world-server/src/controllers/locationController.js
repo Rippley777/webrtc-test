@@ -9,6 +9,7 @@ const GAME_LOGIC_SERVICE_URL =
 // Function to fetch initial user location from PostgreSQL
 const fetchUserLocationFromDB = async (userId) => {
   try {
+    logger.info("Fetching user location from PostgreSQL", { userId });
     const result = await db.query(
       "SELECT x_coordinate, y_coordinate, z_coordinate FROM user_locations WHERE user_id = $1",
       [userId]
