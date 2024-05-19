@@ -26,6 +26,7 @@ const servers = [
 
 // Middleware to choose the target server
 app.use((req, res, next) => {
+  logger.info("Choosing target server");
   const userId = req.body.userId || req.query.userId;
   if (!userId) {
     return res.status(400).send("User ID is required");
