@@ -1,8 +1,8 @@
 const express = require("express");
-
 const router = express.Router();
 
 const { requireAuth } = require("../middlewares/authMiddleware");
+
 const {
   createCharacter,
   getCharactersByPlayerId,

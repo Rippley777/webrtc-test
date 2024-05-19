@@ -46,9 +46,12 @@ const updateUserLocationInRedis = (userId, location) => {
 
 // Function to handle user entering the world
 const userEntersWorld = async (req, res) => {
-  const { userId } = req.body;
+  const userId = req.auth.userId;
+  logger.info(`/userEntersWorld req recv userId ${userId}`);
+
   if (!userId) {
-    return res.status(400).send("User ID is required");
+    logger.warn("no userId was provided in token");
+    return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
   }
 
   try {
@@ -74,9 +77,18 @@ const userEntersWorld = async (req, res) => {
 };
 
 const updateUserLocation = async (req, res) => {
-  const { userId, location } = req.body;
-  if (!userId || !location) {
-    return res.status(400).send("User ID and location are required");
+  const userId = req.auth.userId;
+  logger.info(`updateUserLocation req recv userId ${userId}`);
+
+  if (!userId) {
+    logger.warn("no userId was provided in token");
+    return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
+  }
+
+  const { location } = req.body;
+
+  if (!location) {
+    return res.status(400).send("Invalid location");
   }
 
   // Update user location in Redis
@@ -92,7 +104,13 @@ const updateUserLocation = async (req, res) => {
 };
 
 const getUserLocation = (req, res) => {
-  const { userId } = req.params;
+  const userId = req.auth.userId;
+  logger.info(`/getUserLocation req recv userId ${userId}`);
+
+  if (!userId) {
+    logger.warn("no userId was provided in token");
+    return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
+  }
   redisClient.get(`user:location:${userId}`, (err, result) => {
     if (err) {
       logger.error("Error getting user location from Redis", { error: err });
