@@ -1,5 +1,7 @@
 app.post("/update-state", (req, res) => {
+  console.log('update state called');
   const { key, value } = req.body;
+  
   if (!key || value === undefined) {
     return res.status(400).send("Key and value are required");
   }

@@ -3,8 +3,8 @@ const redisClient = require("../lib/helpers/redisClient");
 const db = require("../db");
 const logger = require("../lib/helpers/logger");
 
-const GAME_LOGIC_SERVICE_URL =
-  process.env.GAME_LOGIC_SERVICE_URL || "http://game-logic:8003";
+const GAME_LOGIC_SERVICE_URL = 'http://game-logic'
+// process.env.GAME_LOGIC_SERVICE_URL || "http://game-logic:8003";
 
 console.log("GAME_LOGIC_SERVICE_URL", GAME_LOGIC_SERVICE_URL);
 // Function to fetch initial user location from PostgreSQL
@@ -67,6 +67,8 @@ const userEntersWorld = async (req, res) => {
     // Update user location in Redis
     updateUserLocationInRedis(userId, location);
 
+    logger.info(`User location fetched ${(userId, location)}`);
+
     // Notify Game Logic service about user entering the world
     await axios.post(`${GAME_LOGIC_SERVICE_URL}/trigger-event`, {
       eventType: "userEntersWorld",
@@ -96,12 +98,14 @@ const updateUserLocation = async (req, res) => {
 
   // Update user location in Redis
   updateUserLocationInRedis(userId, location);
+	console.log('about to update game logic service');
   try {
     // Notify Game Logic service about location update
     await axios.post(`${GAME_LOGIC_SERVICE_URL}/update-state`, {
       key: `userLocation:${userId}`,
       value: location,
     });
+	  console.log('success')
   } catch (err) {
     logger.error("Error updating user location in Game Logic service", {
       error: err,
@@ -120,6 +124,7 @@ const getUserLocation = (req, res) => {
     logger.warn("no userId was provided in token");
     return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
   }
+
   redisClient.get(`user:location:${userId}`, (err, result) => {
     if (err) {
       logger.error("Error getting user location from Redis", { error: err });
