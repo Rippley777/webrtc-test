@@ -49,15 +49,6 @@ services:
     networks:
       - backend
 
-  webrtc-signaling:
-    build:
-      context: ./services/webrtc-signaling
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8000"
-    networks:
-      - backend
-
   chat:
     build:
       context: ./services/chat
@@ -111,7 +102,29 @@ services:
   #   depends_on:
   #     - world-server-1
   #     - world-server-2
-  #     - game-logic
+  #     - game-log
+
+  assets:
+    build:
+      context: ./services/assets
+      dockerfile: Dockerfile
+    ports:
+      - "8078:8000"
+    environment:
+      NODE_ENV: production
+    env_file:
+      - .env
+    networks:
+      - backend
+
+  webrtc-signaling:
+    build:
+      context: ./services/webrtc-signaling
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8000"
+    networks:
+      - backend
 
   world-server:
     build:
