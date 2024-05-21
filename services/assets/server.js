@@ -14,11 +14,9 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-
-console.log('ASSETS DIRECTORY : ', path.join(__dirname, "assets"));
-
 // Serve static files from the assets directory
-app.use("/assets", express.static(path.join(__dirname, "assets")));
+app.use("/models", express.static(path.join(__dirname, "models")));
+app.use("/textures", express.static(path.join(__dirname, "textures")));
 
 app.get("/", (req, res) => {
   res.send("Asset Service is running.");
