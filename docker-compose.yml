@@ -117,8 +117,8 @@ services:
       - .env
     networks:
       - backend
-    volumes:
-      - ./services/assets/assets:/usr/src/app/assets
+    # volumes:
+    #   - ./services/assets/assets:/usr/src/app/assets
 
   webrtc-signaling:
     build:
