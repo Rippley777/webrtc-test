@@ -4,7 +4,7 @@ const path = require("path");
 const cors = require("cors");
 
 const app = express();
-const port = 3001;
+const port = 8078;
 
 const corsOptions = {
   origin: "*",
@@ -14,6 +14,9 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+
+console.log('ASSETS DIRECTORY : ', path.join(__dirname, "assets"));
+
 // Serve static files from the assets directory
 app.use("/assets", express.static(path.join(__dirname, "assets")));
 
@@ -22,5 +25,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Asset service running at http://localhost:${port}`);
+  console.log(`Server running on ${port}`);
 });

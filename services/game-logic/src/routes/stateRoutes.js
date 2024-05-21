@@ -1,7 +1,11 @@
-app.post("/update-state", (req, res) => {
+const express = require("express");
+const router = express.Router();
+
+
+router.post("/update-state", (req, res) => {
   console.log('update state called');
   const { key, value } = req.body;
-  
+
   if (!key || value === undefined) {
     return res.status(400).send("Key and value are required");
   }
@@ -11,6 +15,8 @@ app.post("/update-state", (req, res) => {
 });
 
 // Endpoint to get game state
-app.get("/get-state", (req, res) => {
+router.get("/get-state", (req, res) => {
   res.status(200).json(gameState);
 });
+
+module.exports = router;
