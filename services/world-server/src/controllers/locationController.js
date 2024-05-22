@@ -3,7 +3,7 @@ const redisClient = require("../lib/helpers/redisClient");
 const db = require("../db");
 const logger = require("../lib/helpers/logger");
 
-const GAME_LOGIC_SERVICE_URL = 'http://game-logic:8003'
+const GAME_LOGIC_SERVICE_URL = "http://game-logic:8003";
 // process.env.GAME_LOGIC_SERVICE_URL || "http://game-logic:8003";
 
 console.log("GAME_LOGIC_SERVICE_URL", GAME_LOGIC_SERVICE_URL);
@@ -48,12 +48,26 @@ const updateUserLocationInRedis = (userId, location) => {
 };
 
 // Function to handle user entering the world
+const notifyGameLogicService = async (userId, location) => {
+  try {
+    await axios.post(`${GAME_LOGIC_SERVICE_URL}/trigger-event`, {
+      eventType: "userEntersWorld",
+      eventData: { userId, location },
+    });
+    logger.info(
+      `Successfully notified Game Logic service for userId ${userId}`
+    );
+  } catch (err) {
+    logger.error("Error notifying Game Logic service", { err });
+  }
+};
+
 const userEntersWorld = async (req, res) => {
   const userId = req.auth.userId;
   logger.info(`/userEntersWorld req recv userId ${userId}`);
 
   if (!userId) {
-    logger.warn("no userId was provided in token");
+    logger.warn("No userId was provided in token");
     return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
   }
 
@@ -78,17 +92,16 @@ const userEntersWorld = async (req, res) => {
     // Continue without returning an error response
   }
 
-  try {
-    // Notify Game Logic service about user entering the world asynchronously
-    await axios.post(`${GAME_LOGIC_SERVICE_URL}/trigger-event`, {
-      eventType: "userEntersWorld",
-      eventData: { userId, location },
-    });
-    logger.info(`call to gamelogic success? ${JSON.stringify(test)}`);
-  } catch (err) {
-    logger.error("Error notifying Game Logic service", { err });
-    // Continue without returning an error response
-  }
+  // Notify Game Logic service about user entering the world asynchronously
+  Promise.allSettled([notifyGameLogicService(userId, location)]).then(
+    (results) => {
+      results.forEach((result) => {
+        if (result.status === "rejected") {
+          logger.error("Game Logic notification failed", result.reason);
+        }
+      });
+    }
+  );
 
   res.status(200).json(location);
 };
@@ -110,14 +123,14 @@ const updateUserLocation = async (req, res) => {
 
   // Update user location in Redis
   updateUserLocationInRedis(userId, location);
-	console.log('about to update game logic service');
+  console.log("about to update game logic service");
   try {
     // Notify Game Logic service about location update
     await axios.post(`${GAME_LOGIC_SERVICE_URL}/update-state`, {
       key: `userLocation:${userId}`,
       value: location,
     });
-	  console.log('success')
+    console.log("success");
   } catch (err) {
     logger.error("Error updating user location in Game Logic service", {
       error: err,
