@@ -7,30 +7,31 @@ const GAME_LOGIC_SERVICE_URL = "http://game-logic:8003";
 // process.env.GAME_LOGIC_SERVICE_URL || "http://game-logic:8003";
 
 console.log("GAME_LOGIC_SERVICE_URL", GAME_LOGIC_SERVICE_URL);
+
 // Function to fetch initial user location from PostgreSQL
 const fetchUserLocationFromDB = async (userId) => {
   try {
-    logger.info("Fetching user location from PostgreSQL", { userId });
+    logger.info(`Fetching user location from PostgreSQL for userId ${userId}`);
     const result = await db.query(
       "SELECT x_coordinate, y_coordinate, z_coordinate FROM user_locations WHERE user_id = $1",
       [userId]
     );
     if (result.rows.length === 0) {
-      logger.warn("User location not found in PostgreSQL", { userId });
+      logger.warn(`User location not found in PostgreSQL for userId ${userId}`);
       return null;
     }
     return result.rows[0];
   } catch (err) {
-    logger.error("Error fetching user location from PostgreSQL", {
-      error: err,
-    });
+    logger.error(
+      `Error fetching user location from PostgreSQL for userId ${userId}: ${err.message}`
+    );
     throw err;
   }
 };
 
 // Function to update user location in Redis
 const updateUserLocationInRedis = (userId, location) => {
-  logger.info("Update user location in Redis");
+  logger.info(`Updating user location in Redis for userId ${userId}`);
   const locationKey = `user:location:${userId}`;
   redisClient.set(
     locationKey,
@@ -39,9 +40,11 @@ const updateUserLocationInRedis = (userId, location) => {
     60 * 5,
     (err) => {
       if (err) {
-        logger.error("Error setting user location in Redis", { error: err });
+        logger.error(
+          `Error setting user location in Redis for userId ${userId}: ${err.message}`
+        );
       } else {
-        logger.info("User location updated in Redis", { userId, location });
+        logger.info(`User location updated in Redis for userId ${userId}`);
       }
     }
   );
@@ -58,16 +61,18 @@ const notifyGameLogicService = async (userId, location) => {
       `Successfully notified Game Logic service for userId ${userId}`
     );
   } catch (err) {
-    logger.error("Error notifying Game Logic service", { err });
+    logger.error(
+      `Error notifying Game Logic service for userId ${userId}: ${err.message}`
+    );
   }
 };
 
 const userEntersWorld = async (req, res) => {
   const userId = req.auth.userId;
-  logger.info(`/userEntersWorld req recv userId ${userId}`);
+  logger.info(`userEntersWorld request received for userId ${userId}`);
 
   if (!userId) {
-    logger.warn("No userId was provided in token");
+    logger.warn("No userId provided in token");
     return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
   }
 
@@ -78,9 +83,13 @@ const userEntersWorld = async (req, res) => {
     if (!location) {
       return res.status(404).send("User location not found");
     }
-    logger.info(`User location fetched: userId, ${userId} ${location}`);
+    logger.info(
+      `User location fetched for userId ${userId}: ${JSON.stringify(location)}`
+    );
   } catch (err) {
-    logger.error("Error fetching user location from DB", { err });
+    logger.error(
+      `Error fetching user location from DB for userId ${userId}: ${err.message}`
+    );
     return res.status(500).send("Error fetching user location");
   }
 
@@ -88,8 +97,9 @@ const userEntersWorld = async (req, res) => {
     // Update user location in Redis
     await updateUserLocationInRedis(userId, location);
   } catch (err) {
-    logger.error("Error updating user location in Redis", { err });
-    // Continue without returning an error response
+    logger.error(
+      `Error updating user location in Redis for userId ${userId}: ${err.message}`
+    );
   }
 
   // Notify Game Logic service about user entering the world asynchronously
@@ -97,7 +107,9 @@ const userEntersWorld = async (req, res) => {
     (results) => {
       results.forEach((result) => {
         if (result.status === "rejected") {
-          logger.error("Game Logic notification failed", result.reason);
+          logger.error(
+            `Game Logic notification failed for userId ${userId}: ${result.reason.message}`
+          );
         }
       });
     }
@@ -108,10 +120,10 @@ const userEntersWorld = async (req, res) => {
 
 const updateUserLocation = async (req, res) => {
   const userId = req.auth.userId;
-  logger.info(`updateUserLocation req recv userId ${userId}`);
+  logger.info(`updateUserLocation request received for userId ${userId}`);
 
   if (!userId) {
-    logger.warn("no userId was provided in token");
+    logger.warn("No userId provided in token");
     return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
   }
 
@@ -123,36 +135,51 @@ const updateUserLocation = async (req, res) => {
 
   // Update user location in Redis
   updateUserLocationInRedis(userId, location);
-  console.log("about to update game logic service");
-  try {
-    // Notify Game Logic service about location update
-    await axios.post(`${GAME_LOGIC_SERVICE_URL}/update-state`, {
-      key: `userLocation:${userId}`,
-      value: location,
+
+  console.log("About to update Game Logic service");
+
+  // Notify Game Logic service about location update asynchronously
+  Promise.allSettled([
+    (async () => {
+      try {
+        await axios.post(`${GAME_LOGIC_SERVICE_URL}/update-state`, {
+          key: `userLocation:${userId}`,
+          value: location,
+        });
+        console.log("Success");
+      } catch (err) {
+        logger.error(
+          `Error updating user location in Game Logic service for userId ${userId}: ${err.message}`
+        );
+      }
+    })(),
+  ]).then((results) => {
+    results.forEach((result) => {
+      if (result.status === "rejected") {
+        logger.error(
+          `Game Logic update failed for userId ${userId}: ${result.reason.message}`
+        );
+      }
     });
-    console.log("success");
-  } catch (err) {
-    logger.error("Error updating user location in Game Logic service", {
-      error: err,
-    });
-    return res.status(500).send("Error updating location");
-  }
+  });
 
   res.status(200).send("Location updated");
 };
 
 const getUserLocation = (req, res) => {
   const userId = req.auth.userId;
-  logger.info(`/getUserLocation req recv userId ${userId}`);
+  logger.info(`getUserLocation request received for userId ${userId}`);
 
   if (!userId) {
-    logger.warn("no userId was provided in token");
+    logger.warn("No userId provided in token");
     return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
   }
 
   redisClient.get(`user:location:${userId}`, (err, result) => {
     if (err) {
-      logger.error("Error getting user location from Redis", { error: err });
+      logger.error(
+        `Error getting user location from Redis for userId ${userId}: ${err.message}`
+      );
       return res.status(500).send("Error retrieving location");
     }
     if (!result) {
