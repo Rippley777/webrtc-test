@@ -3,7 +3,7 @@ const redisClient = require("../lib/helpers/redisClient");
 const db = require("../db");
 const logger = require("../lib/helpers/logger");
 
-const GAME_LOGIC_SERVICE_URL = 'http://game-logic'
+const GAME_LOGIC_SERVICE_URL = 'http://game-logic:8003'
 // process.env.GAME_LOGIC_SERVICE_URL || "http://game-logic:8003";
 
 console.log("GAME_LOGIC_SERVICE_URL", GAME_LOGIC_SERVICE_URL);
@@ -57,28 +57,40 @@ const userEntersWorld = async (req, res) => {
     return res.status(401).json({ errors: [{ msg: "Unauthorized" }] });
   }
 
+  let location;
   try {
     // Fetch user location from PostgreSQL
-    const location = await fetchUserLocationFromDB(userId);
+    location = await fetchUserLocationFromDB(userId);
     if (!location) {
       return res.status(404).send("User location not found");
     }
+    logger.info(`User location fetched: userId, ${userId} ${location}`);
+  } catch (err) {
+    logger.error("Error fetching user location from DB", { err });
+    return res.status(500).send("Error fetching user location");
+  }
 
+  try {
     // Update user location in Redis
-    updateUserLocationInRedis(userId, location);
+    await updateUserLocationInRedis(userId, location);
+  } catch (err) {
+    logger.error("Error updating user location in Redis", { err });
+    // Continue without returning an error response
+  }
 
-    logger.info(`User location fetched ${(userId, location)}`);
-
-    // Notify Game Logic service about user entering the world
+  try {
+    // Notify Game Logic service about user entering the world asynchronously
     await axios.post(`${GAME_LOGIC_SERVICE_URL}/trigger-event`, {
       eventType: "userEntersWorld",
       eventData: { userId, location },
     });
-
-    res.status(200).json(location);
+    logger.info(`call to gamelogic success? ${JSON.stringify(test)}`);
   } catch (err) {
-    res.status(500).send("Error fetching user location", { err });
+    logger.error("Error notifying Game Logic service", { err });
+    // Continue without returning an error response
   }
+
+  res.status(200).json(location);
 };
 
 const updateUserLocation = async (req, res) => {

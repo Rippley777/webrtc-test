@@ -16,6 +16,6 @@ app.get("/health", (_req, res) =>
 );
 
 // Use the main router
-app.use("/api", routes);
+app.use("/", routes);
 
 app.listen(8003, () => console.log(`Server running on port ${8003}`));
