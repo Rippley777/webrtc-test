@@ -221,8 +221,9 @@ const getWorldLocations = async (req, res) => {
     //       JOIN character_houses ch ON wl.id = ch.world_location_id
     //       WHERE ch.map_id = $1 AND ch.server_id = $2
     //     `;
-    const values = [mapId, serverId];
-    const result = await db.query(query, values);
+    // const values = [mapId, serverId];
+    // const result = await db.query(query, values);
+    const result = await db.query(query);
 
     res.json(result.rows);
   } catch (error) {
