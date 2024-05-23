@@ -206,7 +206,7 @@ const getWorldLocations = async (req, res) => {
           WHERE ch.map_id = $1 AND ch.server_id = $2
         `;
     const values = [mapId, serverId];
-    const result = await pool.query(query, values);
+    const result = await db.query(query, values);
 
     res.json(result.rows);
   } catch (error) {
