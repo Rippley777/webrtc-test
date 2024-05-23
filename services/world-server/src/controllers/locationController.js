@@ -198,6 +198,22 @@ const getWorldLocations = async (req, res) => {
     return res.status(400).send("map_id and server_id are required");
   }
 
+  // const tableName = `world_locations_map${mapId}_server${serverId}`;
+  const query = `SELECT * FROM world_locations_map${mapId}_server${serverId}`;
+  // const limit = 5;
+  // const offset = (page - 1) * limit;
+
+  // try {
+  //   const query = `
+  //     SELECT *,
+  //       ((x_coordinate - $1)^2 + (y_coordinate - $2)^2 + (z_coordinate - $3)^2) AS distance
+  //     FROM ${tableName}
+  //     ORDER BY distance
+  //     LIMIT $4 OFFSET $5
+  //   `;
+  //   const values = [x, y, z, limit, offset];
+  //   const result = await pool.query(query, values);
+
   try {
     const query = `
           SELECT wl.*
