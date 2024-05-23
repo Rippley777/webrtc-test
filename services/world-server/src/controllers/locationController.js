@@ -199,7 +199,6 @@ const getWorldLocations = async (req, res) => {
   }
 
   // const tableName = `world_locations_map${mapId}_server${serverId}`;
-  const query = `SELECT * FROM world_locations_map${mapId}_server${serverId}`;
   // const limit = 5;
   // const offset = (page - 1) * limit;
 
@@ -215,12 +214,13 @@ const getWorldLocations = async (req, res) => {
   //   const result = await pool.query(query, values);
 
   try {
-    const query = `
-          SELECT wl.*
-          FROM world_locations wl
-          JOIN character_houses ch ON wl.id = ch.world_location_id
-          WHERE ch.map_id = $1 AND ch.server_id = $2
-        `;
+    const query = `SELECT * FROM world_locations_map${mapId}_server${serverId}`;
+    // const query = `
+    //       SELECT wl.*
+    //       FROM world_locations wl
+    //       JOIN character_houses ch ON wl.id = ch.world_location_id
+    //       WHERE ch.map_id = $1 AND ch.server_id = $2
+    //     `;
     const values = [mapId, serverId];
     const result = await db.query(query, values);
 
