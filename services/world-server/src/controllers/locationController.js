@@ -189,4 +189,35 @@ const getUserLocation = (req, res) => {
   });
 };
 
-module.exports = { userEntersWorld, updateUserLocation, getUserLocation };
+const getWorldLocations = async (req, res) => {
+  // const { map_id = 1, server_id = 2 } = req.query;
+
+  const mapId = 1;
+  const serverId = 1;
+  if (!mapId || !serverId) {
+    return res.status(400).send("map_id and server_id are required");
+  }
+
+  try {
+    const query = `
+          SELECT wl.*
+          FROM world_locations wl
+          JOIN character_houses ch ON wl.id = ch.world_location_id
+          WHERE ch.map_id = $1 AND ch.server_id = $2
+        `;
+    const values = [mapId, serverId];
+    const result = await pool.query(query, values);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Error fetching world locations:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+module.exports = {
+  userEntersWorld,
+  updateUserLocation,
+  getUserLocation,
+  getWorldLocations,
+};
